@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class BookController extends Controller
 {
@@ -14,7 +15,9 @@ class BookController extends Controller
     {
         $books = Book::latest()->get();
 
-        return view('books.index', compact('books'));
+        return Inertia::render('Books/Index', [
+            'books' => $books,
+        ]);
     }
 
     /**
@@ -22,7 +25,7 @@ class BookController extends Controller
      */
     public function create()
     {
-        return view('books.create');
+        return Inertia::render('Books/Create');
     }
 
     /**
@@ -52,7 +55,9 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        return view('books.show', compact('book'));
+        return Inertia::render('Books/Show', [
+            'book' => $book,
+        ]);
     }
 
     /**
@@ -60,7 +65,9 @@ class BookController extends Controller
      */
     public function edit(Book $book)
     {
-        return view('books.edit', compact('book'));
+        return Inertia::render('Books/Edit', [
+            'book' => $book,
+        ]);
     }
 
     /**
