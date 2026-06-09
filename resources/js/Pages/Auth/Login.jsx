@@ -1,9 +1,3 @@
-import Checkbox from '@/Components/Checkbox';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Login({ status, canResetPassword }) {
@@ -13,88 +7,127 @@ export default function Login({ status, canResetPassword }) {
         remember: false,
     });
 
-    const submit = (e) => {
+    function submit(e) {
         e.preventDefault();
 
-        post(route('login'), {
+        post('/login', {
             onFinish: () => reset('password'),
         });
-    };
+    }
 
     return (
-        <GuestLayout>
-            <Head title="Log in" />
+        <div style={{
+            minHeight: '100vh',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            background: '#f3f4f6'
+        }}>
+            <Head title="Login" />
 
-            {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
+            <div style={{
+                width: '400px',
+                background: 'white',
+                padding: '30px',
+                borderRadius: '10px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+                <h1 style={{ textAlign: 'center', marginBottom: '10px' }}>
+                    Library Management System
+                </h1>
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>
+                    Login
+                </h2>
 
-                    <TextInput
-                        id="email"
+                {status && (
+                    <p style={{ color: 'green', marginBottom: '15px' }}>
+                        {status}
+                    </p>
+                )}
+
+                <form onSubmit={submit}>
+                    <label>Email</label>
+                    <br />
+                    <input
                         type="email"
-                        name="email"
                         value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        isFocused={true}
                         onChange={(e) => setData('email', e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            marginTop: '5px',
+                            marginBottom: '5px'
+                        }}
                     />
+                    {errors.email && (
+                        <p style={{ color: 'red' }}>{errors.email}</p>
+                    )}
 
-                    <InputError message={errors.email} className="mt-2" />
-                </div>
+                    <br />
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
-
-                    <TextInput
-                        id="password"
+                    <label>Password</label>
+                    <br />
+                    <input
                         type="password"
-                        name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="current-password"
                         onChange={(e) => setData('password', e.target.value)}
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            marginTop: '5px',
+                            marginBottom: '5px'
+                        }}
                     />
+                    {errors.password && (
+                        <p style={{ color: 'red' }}>{errors.password}</p>
+                    )}
 
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
+                    <br />
 
-                <div className="mt-4 block">
-                    <label className="flex items-center">
-                        <Checkbox
-                            name="remember"
+                    <label>
+                        <input
+                            type="checkbox"
                             checked={data.remember}
-                            onChange={(e) =>
-                                setData('remember', e.target.checked)
-                            }
+                            onChange={(e) => setData('remember', e.target.checked)}
                         />
-                        <span className="ms-2 text-sm text-gray-600">
-                            Remember me
-                        </span>
+                        {' '}Remember me
                     </label>
-                </div>
 
-                <div className="mt-4 flex items-center justify-end">
+                    <br /><br />
+
+                    <button
+                        type="submit"
+                        disabled={processing}
+                        style={{
+                            width: '100%',
+                            padding: '10px',
+                            background: '#2563eb',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Login
+                    </button>
+                </form>
+
+                <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                    <p>
+                        Do not have an account?{' '}
+                        <Link href="/register" style={{ color: '#2563eb' }}>
+                            Register here
+                        </Link>
+                    </p>
+
                     {canResetPassword && (
-                        <Link
-                            href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        >
+                        <Link href="/forgot-password" style={{ color: '#6b7280' }}>
                             Forgot your password?
                         </Link>
                     )}
-
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
                 </div>
-            </form>
-        </GuestLayout>
+            </div>
+        </div>
     );
 }
