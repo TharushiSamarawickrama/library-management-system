@@ -17,130 +17,349 @@ export default function Register() {
     }
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            background: '#f3f4f6'
-        }}>
+        <>
             <Head title="Register" />
 
-            <div style={{
-                width: '420px',
-                background: 'white',
-                padding: '30px',
-                borderRadius: '10px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-            }}>
-                <h1 style={{ textAlign: 'center', marginBottom: '10px' }}>
-                    Library Management System
-                </h1>
+            <div style={styles.page}>
+                <div style={styles.leftSection}>
+                    <div style={styles.logoBox}>
+                        <div style={styles.logoIcon}>📚</div>
+                        <div>
+                            <h2 style={styles.logoTitle}>Library LMS</h2>
+                            <p style={styles.logoText}>Smart Library Management</p>
+                        </div>
+                    </div>
 
-                <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>
-                    User Registration
-                </h2>
+                    <div style={styles.heroContent}>
+                        <span style={styles.badge}>Create Your Account</span>
 
-                <form onSubmit={submit}>
-                    <label>Name</label>
-                    <br />
-                    <input
-                        type="text"
-                        value={data.name}
-                        onChange={(e) => setData('name', e.target.value)}
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            marginTop: '5px',
-                            marginBottom: '5px'
-                        }}
-                    />
-                    {errors.name && (
-                        <p style={{ color: 'red' }}>{errors.name}</p>
-                    )}
+                        <h1 style={styles.heroTitle}>
+                            Join the Library Management System
+                        </h1>
 
-                    <br />
+                        <p style={styles.heroText}>
+                            Register as a library user to browse available books,
+                            send borrow requests, and track your borrowed books easily.
+                        </p>
+                    </div>
+                </div>
 
-                    <label>Email</label>
-                    <br />
-                    <input
-                        type="email"
-                        value={data.email}
-                        onChange={(e) => setData('email', e.target.value)}
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            marginTop: '5px',
-                            marginBottom: '5px'
-                        }}
-                    />
-                    {errors.email && (
-                        <p style={{ color: 'red' }}>{errors.email}</p>
-                    )}
+                <div style={styles.rightSection}>
+                    <div style={styles.registerCard}>
+                        <div style={styles.cardHeader}>
+                            <div style={styles.cardIcon}>👤</div>
+                            <h1 style={styles.title}>User Registration</h1>
+                            <p style={styles.subtitle}>
+                                Fill in your details to create a new library account.
+                            </p>
+                        </div>
 
-                    <br />
+                        <form onSubmit={submit}>
+                            <div style={styles.inputGroup}>
+                                <label style={styles.label}>Full Name</label>
+                                <input
+                                    type="text"
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                    placeholder="Enter your full name"
+                                    style={styles.input}
+                                />
+                                {errors.name && (
+                                    <p style={styles.errorText}>{errors.name}</p>
+                                )}
+                            </div>
 
-                    <label>Password</label>
-                    <br />
-                    <input
-                        type="password"
-                        value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            marginTop: '5px',
-                            marginBottom: '5px'
-                        }}
-                    />
-                    {errors.password && (
-                        <p style={{ color: 'red' }}>{errors.password}</p>
-                    )}
+                            <div style={styles.inputGroup}>
+                                <label style={styles.label}>Email Address</label>
+                                <input
+                                    type="email"
+                                    value={data.email}
+                                    onChange={(e) => setData('email', e.target.value)}
+                                    placeholder="Enter your email address"
+                                    style={styles.input}
+                                />
+                                {errors.email && (
+                                    <p style={styles.errorText}>{errors.email}</p>
+                                )}
+                            </div>
 
-                    <br />
+                            <div style={styles.inputGroup}>
+                                <label style={styles.label}>Password</label>
+                                <input
+                                    type="password"
+                                    value={data.password}
+                                    onChange={(e) => setData('password', e.target.value)}
+                                    placeholder="Create a password"
+                                    style={styles.input}
+                                />
+                                {errors.password && (
+                                    <p style={styles.errorText}>{errors.password}</p>
+                                )}
+                            </div>
 
-                    <label>Confirm Password</label>
-                    <br />
-                    <input
-                        type="password"
-                        value={data.password_confirmation}
-                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            marginTop: '5px',
-                            marginBottom: '5px'
-                        }}
-                    />
+                            <div style={styles.inputGroup}>
+                                <label style={styles.label}>Confirm Password</label>
+                                <input
+                                    type="password"
+                                    value={data.password_confirmation}
+                                    onChange={(e) =>
+                                        setData('password_confirmation', e.target.value)
+                                    }
+                                    placeholder="Confirm your password"
+                                    style={styles.input}
+                                />
+                                {errors.password_confirmation && (
+                                    <p style={styles.errorText}>
+                                        {errors.password_confirmation}
+                                    </p>
+                                )}
+                            </div>
 
-                    <br /><br />
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                style={
+                                    processing
+                                        ? styles.disabledButton
+                                        : styles.registerButton
+                                }
+                            >
+                                {processing ? 'Creating Account...' : 'Create Account'}
+                            </button>
+                        </form>
 
-                    <button
-                        type="submit"
-                        disabled={processing}
-                        style={{
-                            width: '100%',
-                            padding: '10px',
-                            background: '#16a34a',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Register
-                    </button>
-                </form>
+                        <div style={styles.loginText}>
+                            Already have an account?{' '}
+                            <Link href="/login" style={styles.loginLink}>
+                                Login here
+                            </Link>
+                        </div>
 
-                <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                    <p>
-                        Already have an account?{' '}
-                        <Link href="/login" style={{ color: '#2563eb' }}>
-                            Login here
-                        </Link>
-                    </p>
+                        <div style={styles.backHomeBox}>
+                            <Link href="/" style={styles.backHomeLink}>
+                                ← Back to Home
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
+
+const styles = {
+    page: {
+        minHeight: '100vh',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        background: '#ffffff',
+        fontFamily: 'Arial, sans-serif',
+    },
+
+    leftSection: {
+        background: 'linear-gradient(135deg, #111827, #1e40af)',
+        color: '#ffffff',
+        padding: '55px 70px',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
+        overflow: 'hidden',
+    },
+
+    logoBox: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '14px',
+        position: 'absolute',
+        top: '55px',
+        left: '70px',
+        zIndex: 2,
+    },
+
+    logoIcon: {
+        width: '58px',
+        height: '58px',
+        background: '#2563eb',
+        borderRadius: '16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '28px',
+        boxShadow: '0 8px 18px rgba(37, 99, 235, 0.35)',
+    },
+
+    logoTitle: {
+        margin: 0,
+        fontSize: '26px',
+        fontWeight: 'bold',
+    },
+
+    logoText: {
+        margin: '5px 0 0',
+        color: '#dbeafe',
+        fontSize: '15px',
+    },
+
+    heroContent: {
+        maxWidth: '620px',
+        marginTop: '210px',
+        zIndex: 2,
+    },
+
+    badge: {
+        display: 'inline-block',
+        background: 'rgba(255, 255, 255, 0.16)',
+        color: '#ffffff',
+        padding: '10px 18px',
+        borderRadius: '30px',
+        fontSize: '15px',
+        fontWeight: 'bold',
+        marginBottom: '28px',
+    },
+
+    heroTitle: {
+        fontSize: '52px',
+        lineHeight: '1.15',
+        margin: '0 0 24px',
+        fontWeight: 'bold',
+        maxWidth: '650px',
+    },
+
+    heroText: {
+        color: '#dbeafe',
+        fontSize: '20px',
+        lineHeight: '1.8',
+        maxWidth: '650px',
+        margin: 0,
+    },
+
+    rightSection: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#f9fafb',
+        padding: '40px',
+    },
+
+    registerCard: {
+        width: '100%',
+        maxWidth: '480px',
+        background: '#ffffff',
+        padding: '38px',
+        borderRadius: '24px',
+        boxShadow: '0 18px 40px rgba(0, 0, 0, 0.12)',
+        border: '1px solid #e5e7eb',
+    },
+
+    cardHeader: {
+        textAlign: 'center',
+        marginBottom: '28px',
+    },
+
+    cardIcon: {
+        width: '64px',
+        height: '64px',
+        background: '#dbeafe',
+        color: '#1e40af',
+        borderRadius: '18px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontSize: '30px',
+        margin: '0 auto 15px',
+    },
+
+    title: {
+        fontSize: '32px',
+        color: '#111827',
+        margin: 0,
+    },
+
+    subtitle: {
+        color: '#6b7280',
+        marginTop: '10px',
+        lineHeight: '1.5',
+    },
+
+    inputGroup: {
+        marginBottom: '17px',
+    },
+
+    label: {
+        display: 'block',
+        color: '#374151',
+        fontWeight: 'bold',
+        marginBottom: '8px',
+        fontSize: '14px',
+    },
+
+    input: {
+        width: '100%',
+        padding: '13px 14px',
+        border: '1px solid #d1d5db',
+        borderRadius: '12px',
+        fontSize: '15px',
+        outline: 'none',
+        background: '#f9fafb',
+        boxSizing: 'border-box',
+    },
+
+    errorText: {
+        color: '#dc2626',
+        marginTop: '6px',
+        marginBottom: 0,
+        fontSize: '13px',
+    },
+
+    registerButton: {
+        width: '100%',
+        padding: '14px',
+        background: '#2563eb',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '12px',
+        cursor: 'pointer',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        boxShadow: '0 8px 18px rgba(37, 99, 235, 0.35)',
+        marginTop: '8px',
+    },
+
+    disabledButton: {
+        width: '100%',
+        padding: '14px',
+        background: '#9ca3af',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '12px',
+        cursor: 'not-allowed',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        marginTop: '8px',
+    },
+
+    loginText: {
+        textAlign: 'center',
+        marginTop: '24px',
+        color: '#6b7280',
+        fontSize: '14px',
+    },
+
+    loginLink: {
+        color: '#2563eb',
+        textDecoration: 'none',
+        fontWeight: 'bold',
+    },
+
+    backHomeBox: {
+        textAlign: 'center',
+        marginTop: '18px',
+    },
+
+    backHomeLink: {
+        color: '#374151',
+        textDecoration: 'none',
+        fontSize: '14px',
+        fontWeight: 'bold',
+    },
+};
