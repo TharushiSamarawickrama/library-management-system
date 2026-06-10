@@ -30,6 +30,12 @@ Route::middleware('auth')->group(function () {
     Route::resource('borrow-requests', BorrowRequestController::class);
     Route::resource('borrowings', BorrowingController::class);
 
+    Route::post('/borrow-requests/{borrowRequest}/approve', [BorrowRequestController::class, 'approve'])
+        ->name('borrow-requests.approve');
+
+    Route::post('/borrow-requests/{borrowRequest}/reject', [BorrowRequestController::class, 'reject'])
+        ->name('borrow-requests.reject');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
