@@ -9,14 +9,26 @@ use Inertia\Inertia;
 class BookController extends Controller
 {
     /**
-     * Display all books.
+     * Display all books with search option.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::latest()->get();
+        $search = $request->input('search');
+
+        $books = Book::query()
+            ->when($search, function ($query, $search) {
+                $query->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('author', 'like', '%' . $search . '%')
+                    ->orWhere('category', 'like', '%' . $search . '%');
+            })
+            ->latest()
+            ->get();
 
         return Inertia::render('Books/Index', [
             'books' => $books,
+            'filters' => [
+                'search' => $search,
+            ],
         ]);
     }
 

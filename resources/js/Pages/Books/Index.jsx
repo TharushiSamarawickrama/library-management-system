@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 
-export default function Index({ books }) {
+export default function Index({ books, filters }) {
     const { auth } = usePage().props;
     const user = auth?.user;
     const isAdmin = user?.role === 'admin';
+
+    const [search, setSearch] = useState(filters?.search || '');
 
     function deleteBook(id) {
         if (confirm('Are you sure you want to delete this book?')) {
@@ -17,6 +20,34 @@ export default function Index({ books }) {
                 book_id: bookId,
             });
         }
+    }
+
+    function searchBooks(e) {
+        e.preventDefault();
+
+        router.get(
+            '/books',
+            {
+                search: search,
+            },
+            {
+                preserveState: true,
+                replace: true,
+            }
+        );
+    }
+
+    function clearSearch() {
+        setSearch('');
+
+        router.get(
+            '/books',
+            {},
+            {
+                preserveState: true,
+                replace: true,
+            }
+        );
     }
 
     const totalCopies = books.reduce(
@@ -118,7 +149,9 @@ export default function Index({ books }) {
                             <div style={styles.statIconBlue}>📚</div>
                             <div>
                                 <h3 style={styles.statTitle}>{books.length}</h3>
-                                <p style={styles.statText}>Total Books</p>
+                                <p style={styles.statText}>
+                                    {filters?.search ? 'Search Results' : 'Total Books'}
+                                </p>
                             </div>
                         </div>
 
@@ -152,10 +185,42 @@ export default function Index({ books }) {
                             <div>
                                 <h2 style={styles.tableTitle}>Book List</h2>
                                 <p style={styles.tableSubtitle}>
-                                    Clean overview of all library books and actions.
+                                    Search and manage books by title, author, or category.
                                 </p>
                             </div>
+
+                            <form onSubmit={searchBooks} style={styles.searchForm}>
+                                <input
+                                    type="text"
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    placeholder="Search by title, author, or category..."
+                                    style={styles.searchInput}
+                                />
+
+                                <button type="submit" style={styles.searchButton}>
+                                    Search
+                                </button>
+
+                                {filters?.search && (
+                                    <button
+                                        type="button"
+                                        onClick={clearSearch}
+                                        style={styles.clearButton}
+                                    >
+                                        Clear
+                                    </button>
+                                )}
+                            </form>
                         </div>
+
+                        {filters?.search && (
+                            <div style={styles.searchResultBox}>
+                                <span style={styles.searchResultText}>
+                                    Showing results for: <strong>{filters.search}</strong>
+                                </span>
+                            </div>
+                        )}
 
                         {books.length > 0 ? (
                             <div style={styles.tableWrapper}>
@@ -268,8 +333,16 @@ export default function Index({ books }) {
                                 <div style={styles.emptyIcon}>📚</div>
                                 <h3 style={styles.emptyTitle}>No books found</h3>
                                 <p style={styles.emptyText}>
-                                    There are no books available in the system.
+                                    {filters?.search
+                                        ? 'No books matched your search. Try another title, author, or category.'
+                                        : 'There are no books available in the system.'}
                                 </p>
+
+                                {filters?.search && (
+                                    <button onClick={clearSearch} style={styles.emptyButton}>
+                                        Clear Search
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>
@@ -549,6 +622,11 @@ const styles = {
         padding: '20px 24px',
         borderBottom: '1px solid #e5e7eb',
         background: '#ffffff',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '18px',
+        flexWrap: 'wrap',
     },
 
     tableTitle: {
@@ -560,6 +638,59 @@ const styles = {
     tableSubtitle: {
         margin: '6px 0 0',
         color: '#6b7280',
+        fontSize: '14px',
+    },
+
+    searchForm: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        flexWrap: 'wrap',
+    },
+
+    searchInput: {
+        width: '320px',
+        padding: '11px 14px',
+        border: '1px solid #d1d5db',
+        borderRadius: '10px',
+        fontSize: '14px',
+        outline: 'none',
+        background: '#f9fafb',
+        color: '#111827',
+        boxSizing: 'border-box',
+    },
+
+    searchButton: {
+        background: '#2563eb',
+        color: '#ffffff',
+        border: 'none',
+        padding: '11px 16px',
+        borderRadius: '10px',
+        cursor: 'pointer',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        boxShadow: '0 8px 18px rgba(37, 99, 235, 0.25)',
+    },
+
+    clearButton: {
+        background: '#e5e7eb',
+        color: '#374151',
+        border: 'none',
+        padding: '11px 16px',
+        borderRadius: '10px',
+        cursor: 'pointer',
+        fontSize: '14px',
+        fontWeight: 'bold',
+    },
+
+    searchResultBox: {
+        background: '#eff6ff',
+        borderBottom: '1px solid #bfdbfe',
+        padding: '12px 24px',
+    },
+
+    searchResultText: {
+        color: '#1e40af',
         fontSize: '14px',
     },
 
@@ -767,5 +898,17 @@ const styles = {
     emptyText: {
         color: '#6b7280',
         marginTop: '8px',
+    },
+
+    emptyButton: {
+        marginTop: '14px',
+        background: '#2563eb',
+        color: '#ffffff',
+        border: 'none',
+        padding: '11px 16px',
+        borderRadius: '10px',
+        cursor: 'pointer',
+        fontSize: '14px',
+        fontWeight: 'bold',
     },
 };
