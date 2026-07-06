@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
+// This file checks the login details ( login validations )
 class LoginRequest extends FormRequest
 {
     /**

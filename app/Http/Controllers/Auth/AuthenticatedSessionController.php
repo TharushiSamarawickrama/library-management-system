@@ -25,7 +25,7 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Handle an incoming authentication request. ( login user )
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -37,7 +37,7 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Destroy an authenticated session.
+     * Destroy an authenticated session. ( logout user )
      */
     public function destroy(Request $request): RedirectResponse
     {
