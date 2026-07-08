@@ -265,6 +265,16 @@ class FeatureContext implements Context
         $this->createOrUpdateBook($title, $availableCopies);
     }
 
+    #[Given('a book :title exists with author :author and category :category and :availableCopies available copies')]
+    public function aBookExistsWithAuthorAndCategoryAndAvailableCopies(
+        string $title,
+        string $author,
+        string $category,
+        int $availableCopies
+    ): void {
+        $this->createOrUpdateBookWithDetails($title, $author, $category, $availableCopies);
+    }
+
     #[Then('a book :title should exist')]
     public function aBookShouldExist(string $title): void
     {
@@ -417,6 +427,27 @@ class FeatureContext implements Context
         );
     }
 
+    #[Then('only one borrow request should exist for me and book :title')]
+    public function onlyOneBorrowRequestShouldExistForMeAndBook(string $title): void
+    {
+        $this->assertNotNullOrFail($this->currentUserId, 'No logged-in student found.');
+
+        $book = $this->findBookByTitle($title);
+
+        $this->assertNotNullOrFail($book, "Book not found: {$title}");
+
+        $count = DB::table('borrow_requests')
+            ->where('user_id', $this->currentUserId)
+            ->where('book_id', $book->id)
+            ->count();
+
+        $this->assertEqualsOrFail(
+            1,
+            $count,
+            "Expected only one borrow request for {$title}, but found {$count}."
+        );
+    }
+
     #[Then('a borrow request should exist for :title with status :status')]
     #[Then('the borrow request for :title should have status :status')]
     public function theBorrowRequestForShouldHaveStatus(string $title, string $status): void
@@ -561,7 +592,7 @@ class FeatureContext implements Context
     private function submitBookCreateForm(): void
     {
         $title = $this->formFields['title'] ?? 'Untitled Book';
-        $isbn = $this->formFields['isbn'] ?? ('ISBN-' . md5($title));
+        $isbn = $this->formFields['isbn'] ?? $this->generateValidIsbn($title);
 
         $oldBook = DB::table('books')
             ->where('title', $title)
@@ -602,7 +633,7 @@ class FeatureContext implements Context
 
         $title = $this->formFields['title'] ?? ($book->title ?? 'Clean Code');
         $author = $this->formFields['author'] ?? ($book->author ?? 'Robert C. Martin');
-        $isbn = $this->formFields['isbn'] ?? ($book->isbn ?? ('ISBN-' . md5($title)));
+        $isbn = $this->formFields['isbn'] ?? ($book->isbn ?? $this->generateValidIsbn($title));
         $category = $this->formFields['category'] ?? ($book->category ?? 'Programming');
 
         $available = $this->formFields['available_copies']
@@ -623,7 +654,7 @@ class FeatureContext implements Context
             'total_copies' => (int) $available,
             'available_quantity' => (int) $available,
             'quantity' => (int) $available,
-            'status' => 'available',
+            'status' => (int) $available > 0 ? 'available' : 'unavailable',
         ];
     }
 
@@ -661,9 +692,23 @@ class FeatureContext implements Context
 
     private function createOrUpdateBook(string $title, int $availableCopies): void
     {
+        $this->createOrUpdateBookWithDetails(
+            $title,
+            'Robert C. Martin',
+            'Programming',
+            $availableCopies
+        );
+    }
+
+    private function createOrUpdateBookWithDetails(
+        string $title,
+        string $author,
+        string $category,
+        int $availableCopies
+    ): void {
         $columns = Schema::getColumnListing('books');
 
-        $isbn = 'ISBN-' . md5($title);
+        $isbn = $this->generateValidIsbn($title . $author . $category);
 
         $existingBook = DB::table('books')
             ->where('title', $title)
@@ -682,7 +727,7 @@ class FeatureContext implements Context
         }
 
         if (in_array('author', $columns, true)) {
-            $data['author'] = 'Robert C. Martin';
+            $data['author'] = $author;
         }
 
         if (in_array('isbn', $columns, true)) {
@@ -690,7 +735,7 @@ class FeatureContext implements Context
         }
 
         if (in_array('category', $columns, true)) {
-            $data['category'] = 'Programming';
+            $data['category'] = $category;
         }
 
         if (in_array('description', $columns, true)) {
@@ -880,6 +925,13 @@ class FeatureContext implements Context
         }
 
         return null;
+    }
+
+    private function generateValidIsbn(string $value): string
+    {
+        $number = abs(crc32($value));
+
+        return '978' . str_pad((string) ($number % 10000000000), 10, '0', STR_PAD_LEFT);
     }
 
     private function request(string $method, string $path, array $data = []): void

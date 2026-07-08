@@ -45,18 +45,28 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'author' => 'required',
-            'isbn' => 'required|unique:books,isbn',
-            'category' => 'nullable',
-            'published_year' => 'nullable|integer',
-            'total_copies' => 'required|integer|min:1',
-            'available_copies' => 'required|integer|min:0',
-            'status' => 'required',
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'author' => ['required', 'string', 'max:255'],
+            'isbn' => ['required', 'regex:/^[0-9]{10,13}$/', 'unique:books,isbn'],
+            'category' => ['required', 'string', 'max:255'],
+            'published_year' => ['nullable', 'integer'],
+            'available_copies' => ['required', 'integer', 'min:0'],
+            'total_copies' => ['nullable', 'integer', 'min:0'],
+            'status' => ['nullable', 'string'],
+        ], [
+            'title.required' => 'The title field is required',
+            'isbn.regex' => 'The ISBN format is invalid',
+            'available_copies.min' => 'The available copies must be at least 0',
         ]);
 
-        Book::create($request->all());
+        $validated['total_copies'] = $validated['total_copies'] ?? $validated['available_copies'];
+
+        if (!isset($validated['status'])) {
+            $validated['status'] = $validated['available_copies'] > 0 ? 'available' : 'unavailable';
+        }
+
+        Book::create($validated);
 
         return redirect()->route('books.index')
             ->with('success', 'Book added successfully.');
@@ -87,18 +97,28 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book)
     {
-        $request->validate([
-            'title' => 'required',
-            'author' => 'required',
-            'isbn' => 'required|unique:books,isbn,' . $book->id,
-            'category' => 'nullable',
-            'published_year' => 'nullable|integer',
-            'total_copies' => 'required|integer|min:1',
-            'available_copies' => 'required|integer|min:0',
-            'status' => 'required',
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'author' => ['required', 'string', 'max:255'],
+            'isbn' => ['required', 'regex:/^[0-9]{10,13}$/', 'unique:books,isbn,' . $book->id],
+            'category' => ['required', 'string', 'max:255'],
+            'published_year' => ['nullable', 'integer'],
+            'available_copies' => ['required', 'integer', 'min:0'],
+            'total_copies' => ['nullable', 'integer', 'min:0'],
+            'status' => ['nullable', 'string'],
+        ], [
+            'title.required' => 'The title field is required',
+            'isbn.regex' => 'The ISBN format is invalid',
+            'available_copies.min' => 'The available copies must be at least 0',
         ]);
 
-        $book->update($request->all());
+        $validated['total_copies'] = $validated['total_copies'] ?? $validated['available_copies'];
+
+        if (!isset($validated['status'])) {
+            $validated['status'] = $validated['available_copies'] > 0 ? 'available' : 'unavailable';
+        }
+
+        $book->update($validated);
 
         return redirect()->route('books.index')
             ->with('success', 'Book updated successfully.');
